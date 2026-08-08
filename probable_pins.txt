@@ -1,0 +1,62 @@
+he1/PA1 Bed SSR
+he2/PA3 LED
+he3/PA5 Canbus power
+
+TH0/PB0 Bed Thermistor
+
+FAN0/PF7 Bed Fan Right
+FAN1/PF9 Bed Fan Left
+FAN2/PF6 Bed Fan Left
+FAN3/PF8 Nevermore
+
+====================================================================
+BIGTREETECH MANTA M8P V2.0 - STEPPER DRIVER PIN MAPPING
+====================================================================
+
+MOTOR 1 (X Axis)
+  step_pin:   PE6
+  dir_pin:    PE5
+  enable_pin: !PC14
+  uart_pin:   PC13
+
+MOTOR 2 (Y Axis)
+  step_pin:   PE2
+  dir_pin:    PE1
+  enable_pin: !PE4
+  uart_pin:   PE3
+
+MOTOR 3 (Z / Z0)
+  step_pin:   PB8
+  dir_pin:    PB7
+  enable_pin: !PE0
+  uart_pin:   PB9
+
+MOTOR 4 (Z1)
+  step_pin:   PB4
+  dir_pin:    PB3
+  enable_pin: !PB6
+  uart_pin:   PB5
+
+MOTOR 5 (Z2)
+  step_pin:   PG13
+  dir_pin:    PG12
+  enable_pin: !PG15
+  uart_pin:   PG14
+
+MOTOR 6 (Z3)
+  step_pin:   PG9
+  dir_pin:    PD7
+  enable_pin: !PG11
+  uart_pin:   PG10
+
+MOTOR 7 (Spare)
+  step_pin:   PD4
+  dir_pin:    PD3
+  enable_pin: !PD6
+  uart_pin:   PD5
+
+MOTOR 8 (Extruder / Spare)
+  step_pin:   PC7
+  dir_pin:    PC8
+  enable_pin: !PD2
+  uart_pin:   PC6

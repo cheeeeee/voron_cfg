@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voron 2.4 Formbot Reference & Documentation Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f1115;
+      --bg-card: rgba(22, 27, 34, 0.75);
+      --bg-card-hover: rgba(30, 36, 46, 0.85);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(230, 57, 70, 0.4);
+      --text-main: #e6edf3;
+      --text-muted: #8b949e;
+      --voron-red: #ff3344;
+      --voron-red-glow: rgba(255, 51, 68, 0.25);
+      --accent-blue: #38bdf8;
+      --accent-green: #4ade80;
+      --accent-purple: #c084fc;
+      --sidebar-width: 280px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 51, 68, 0.04) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.04) 0%, transparent 40%);
+    }
+
+    /* Sidebar Navigation */
+    aside {
+      width: var(--sidebar-width);
+      background: rgba(15, 17, 21, 0.95);
+      backdrop-filter: blur(12px);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      z-index: 100;
+      overflow-y: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--voron-red), #990011);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: white;
+      box-shadow: 0 0 15px var(--voron-red-glow);
+    }
+
+    .brand-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.6rem 0.8rem 0.6rem 2.2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--voron-red);
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 10px var(--voron-red-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .nav-menu {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .nav-item a:hover, .nav-item a.active {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .nav-item a.active {
+      color: var(--voron-red);
+      border-left: 3px solid var(--voron-red);
+      background: rgba(255, 51, 68, 0.08);
+    }
+
+    /* Main Content */
+    main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 2.5rem 3rem;
+      max-width: 1400px;
+    }
+
+    header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 40%, var(--text-muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .badge-red {
+      background: rgba(255, 51, 68, 0.15);
+      border-color: rgba(255, 51, 68, 0.3);
+      color: #ff6675;
+    }
+
+    .badge-blue {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: #7dd3fc;
+    }
+
+    .badge-green {
+      background: rgba(74, 222, 128, 0.15);
+      border-color: rgba(74, 222, 128, 0.3);
+      color: #86efac;
+    }
+
+    .badge-purple {
+      background: rgba(192, 132, 252, 0.15);
+      border-color: rgba(192, 132, 252, 0.3);
+      color: #e9d5ff;
+    }
+
+    /* Section Cards */
+    section {
+      margin-bottom: 3rem;
+      scroll-margin-top: 2rem;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+
+    .section-tag {
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--voron-red);
+      background: rgba(255, 51, 68, 0.1);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    /* PDF Cards Grid */
+    .pdf-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .pdf-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .pdf-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .pdf-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pdf-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+      flex: 1;
+    }
+
+    .pdf-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background: var(--voron-red);
+      color: white;
+      box-shadow: 0 0 10px var(--voron-red-glow);
+    }
+
+    .btn-primary:hover {
+      background: #ff4d5e;
+      transform: scale(1.02);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    /* Modal PDF Viewer */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-container {
+      background: #161b22;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 1200px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-header {
+      padding: 1rem 1.5rem;
+      background: rgba(0, 0, 0, 0.4);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      font-size: 1.2rem;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--voron-red);
+    }
+
+    .modal-body {
+      flex: 1;
+      background: #0d1117;
+    }
+
+    .modal-body iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    /* Tables */
+    .table-container {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.9rem 1.2rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    td strong {
+      color: #fff;
+    }
+
+    /* Links & Buttons */
+    a.doc-link {
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.15s;
+    }
+
+    a.doc-link:hover {
+      color: #7dd3fc;
+      text-decoration: underline;
+    }
+
+    /* Grid Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--voron-red);
+      background: rgba(255, 51, 68, 0.1);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    .card-text {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .card-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .card-list li {
+      font-size: 0.85rem;
+      color: var(--text-main);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .card-list li::before {
+      content: "•";
+      color: var(--voron-red);
+      font-weight: bold;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.825rem;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+      color: #e6edf3;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      aside {
+        display: none;
+      }
+      main {
+        margin-left: 0;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside>
+    <div class="brand">
+      <div class="brand-logo">V2</div>
+      <div>
+        <div class="brand-title">Voron 2.4 Pro</div>
+        <div class="brand-subtitle">Mainsail Reference Guide</div>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search manuals, config, hardware..." onkeyup="filterContent()">
+    </div>
+
+    <ul class="nav-menu">
+      <li class="nav-item"><a href="#pdf-manuals" class="active">📄 PDF Manuals Hub</a></li>
+      <li class="nav-item"><a href="#hardware">📦 1. Hardware List & BOM</a></li>
+      <li class="nav-item"><a href="#guides">📘 2. Assembly & Flashing</a></li>
+      <li class="nav-item"><a href="#overview">⚙️ 3. Overview of printer.cfg</a></li>
+      <li class="nav-item"><a href="#breakdown">🧱 4. Config Modular Breakdown</a></li>
+      <li class="nav-item"><a href="#resources">🔗 5. Klipper Resources</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+    <header>
+      <h1 class="hero-title">Voron 2.4 Formbot Reference Guide</h1>
+      <p style="color: var(--text-muted); font-size: 1rem;">Complete technical hardware list, local PDF documentation manuals, wiring pinouts, and Klipper configuration index.</p>
+      
+      <div class="hero-badges">
+        <span class="badge badge-red">Build Volume: 350 x 350 x 340 mm</span>
+        <span class="badge badge-blue">MCU: BTT Manta M8P V2.0 + CB1</span>
+        <span class="badge badge-green">Toolhead: EBB SB2209 CAN (RP2040)</span>
+        <span class="badge">Probe: Voron TAP V2</span>
+        <span class="badge badge-purple">7 PDF Manuals Localized</span>
+      </div>
+    </header>
+
+    <!-- SECTION: LOCAL PDF MANUALS HUB -->
+    <section id="pdf-manuals">
+      <div class="section-header">
+        <h2 class="section-title">📄 Local PDF Documentation Manuals</h2>
+        <span class="section-tag">PDF Hub</span>
+      </div>
+
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+        All assembly manuals and component datasheets are hosted directly on your printer in <code>docs/</code>. You can view them inline inside Mainsail or open/download them locally.
+      </p>
+
+      <div class="pdf-grid">
+        <!-- PDF 1: Voron 2.4 Assembly Manual -->
+        <div class="pdf-card">
+          <div>
+            <div class="pdf-title">📕 Voron 2.4 R2 Assembly Manual</div>
+            <div class="pdf-desc">Official mechanical manual for 350mm frame, motion system, quad gantry, and panel assembly.</div>
+          </div>
+          <div class="pdf-actions">
+            <button class="btn btn-primary" onclick="openPdfModal('docs/Voron_2.4_R2_Assembly_Manual.pdf', 'Voron 2.4 R2 Assembly Manual')">👁️ View PDF</button>
+            <a href="docs/Voron_2.4_R2_Assembly_Manual.pdf" target="_blank" class="btn btn-secondary">💾 Open/Save</a>
+          </div>
+        </div>
+
+        <!-- PDF 2: Voron Stealthburner Manual -->
+        <div class="pdf-card">
+          <div>
+            <div class="pdf-title">🔥 Voron Stealthburner Manual</div>
+            <div class="pdf-desc">Clockwork2 extruder, toolhead body, Neopixels, and Stealthburner assembly guide.</div>
+          </div>
+          <div class="pdf-actions">
+            <button class="btn btn-primary" onclick="openPdfModal('docs/Voron_Stealthburner_Assembly_Manual.pdf', 'Voron Stealthburner Manual')">👁️ View PDF</button>
+            <a href="docs/Voron_Stealthburner_Assembly_Manual.pdf" target="_blank" class="btn btn-secondary">💾 Open/Save</a>
+          </div>
+        </div>
+
+        <!-- PDF 3: Voron TAP Manual -->
+        <div class="pdf-card">
+          <div>
+            <div class="pdf-title">🎯 Voron TAP V2 Assembly Manual</div>
+            <div class="pdf-desc">Optical Z-probe assembly, MGN9 rail mounting, and magnet alignment instructions.</div>
+          </div>
+          <div class="pdf-actions">
+            <button class="btn btn-primary" onclick="openPdfModal('docs/Voron_TAP_Assembly_Manual.pdf', 'Voron TAP V2 Assembly Manual')">👁️ View PDF</button>
+            <a href="docs/Voron_TAP_Assembly_Manual.pdf" target="_blank" class="btn btn-secondary">💾 Open/Save</a>
+          </div>
+        </div>
+
+        <!-- PDF 4: BTT Manta M8P V2.0 User Manual -->
+        <div class="pdf-card">
+          <div>
+            <div class="pdf-title">⚡ BTT Manta M8P V2.0 Manual</div>
+            <div class="pdf-desc">Hardware pinout diagrams, jumper settings, driver UART modes, and CB1/CM4 setup.</div>
+          </div>
+          <div class="pdf-actions">
+            <button class="btn btn-primary" onclick="openPdfModal('docs/BTT_Manta_M8P_V2.0_User_Manual.pdf', 'BTT Manta M8P V2.0 User Manual')">👁️ View PDF</button>
+            <a href="docs/BTT_Manta_M8P_V2.0_User_Manual.pdf" target="_blank" class="btn btn-secondary">💾 Open/Save</a>
+          </div>
+        </div>
+
+        <!-- PDF 5: BTT EBB SB2209 CAN RP2040 -->
+        <div class="pdf-card">
+          <div>
+            <div class="pdf-title">🔌 EBB SB2209 CAN (RP2040) Guide</div>
+            <div class="pdf-desc">Toolhead CAN expansion board wiring, PT1000/NTC jumpers, Katapult flashing, and pinouts.</div>
+          </div>
+          <div class="pdf-actions">
+            <button class="btn btn-primary" onclick="openPdfModal('docs/BTT_EBB_SB2209_CAN_RP2040_Build_Guide.pdf', 'EBB SB2209 CAN RP2040 Guide')">👁️ View PDF</button>
+            <a href="docs/BTT_EBB_SB2209_CAN_RP2040_Build_Guide.pdf" target="_blank" class="btn btn-secondary">💾 Open/Save</a>
+          </div>
+        </div>
+
+        <!-- PDF 6: BTT TMC2209 User Manual -->
+        <div class="pdf-card">
+          <div>
+            <div class="pdf-title">🎛️ BTT TMC2209 V1.3 User Manual</div>
+            <div class="pdf-desc">Stepper driver specifications, UART mode configuration, and current capacity ratings.</div>
+          </div>
+          <div class="pdf-actions">
+            <button class="btn btn-primary" onclick="openPdfModal('docs/BTT_TMC2209_V1.3_User_Manual.pdf', 'BTT TMC2209 V1.3 User Manual')">👁️ View PDF</button>
+            <a href="docs/BTT_TMC2209_V1.3_User_Manual.pdf" target="_blank" class="btn btn-secondary">💾 Open/Save</a>
+          </div>
+        </div>
+
+        <!-- PDF 7: MOONS Stepper Datasheet -->
+        <div class="pdf-card">
+          <div>
+            <div class="pdf-title">⚙️ MOONS 17HS19-2004S1 Datasheet</div>
+            <div class="pdf-desc">Electrical characteristics, phase coil diagrams, and torque curves for NEMA17 steppers.</div>
+          </div>
+          <div class="pdf-actions">
+            <button class="btn btn-primary" onclick="openPdfModal('docs/MOONS_17HS19_2004S1_Datasheet.pdf', 'MOONS 17HS19-2004S1 Datasheet')">👁️ View PDF</button>
+            <a href="docs/MOONS_17HS19_2004S1_Datasheet.pdf" target="_blank" class="btn btn-secondary">💾 Open/Save</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: HARDWARE & BOM -->
+    <section id="hardware">
+      <div class="section-header">
+        <h2 class="section-title">1. Hardware List & Bill of Materials</h2>
+        <span class="section-tag">BOM Specs</span>
+      </div>
+
+      <!-- Core Control -->
+      <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.75rem;">Core Control & Power Electronics</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th style="text-align: center;">Qty</th>
+              <th>Notes & Reference Links</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>BTT Manta M8P + CB1</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>Main control board and Compute Module host. <a href="docs/BTT_Manta_M8P_V2.0_User_Manual.pdf" target="_blank" class="doc-link">Local PDF Manual 📄</a></td>
+            </tr>
+            <tr>
+              <td><strong>BTT EBB SB2209 CAN (RP2040)</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>Toolhead expansion board. <a href="docs/BTT_EBB_SB2209_CAN_RP2040_Build_Guide.pdf" target="_blank" class="doc-link">Local PDF Guide 📄</a></td>
+            </tr>
+            <tr>
+              <td><strong>TMC2209 Stepper Drivers</strong></td>
+              <td style="text-align: center;">6</td>
+              <td>Stepper drivers (X, Y, Z0, Z1, Z2, Z3). <a href="docs/BTT_TMC2209_V1.3_User_Manual.pdf" target="_blank" class="doc-link">Local PDF Manual 📄</a></td>
+            </tr>
+            <tr>
+              <td><strong>BTT HDMI5 Touch Screen</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>5" 800x480 Capacitive IPS display. <a href="https://github.com/bigtreetech/docs/blob/master/docs/HDMI5.md" target="_blank" class="doc-link">HDMI5 Specs ↗</a></td>
+            </tr>
+            <tr>
+              <td><strong>MEAN WELL LRS-200-24</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>24V 200W main system power supply. <a href="https://meanwell-ps.com/products/lrs-200-24" target="_blank" class="doc-link">Data Sheet ↗</a></td>
+            </tr>
+            <tr>
+              <td><strong>Omron G3NB-210B-1</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>Solid State Relay for AC bed heater. <a href="https://www.omron-ap.com/products/family/3232/specification.html" target="_blank" class="doc-link">Omron Specs ↗</a></td>
+            </tr>
+            <tr>
+              <td><strong>CW2A-10A-T Power Inlet</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>Filtered power entry module with switch & fuse socket.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Toolhead & Motion -->
+      <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 0.75rem;">Toolhead, Motion & Probing</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th style="text-align: center;">Qty</th>
+              <th>Notes & Reference Links</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Voron TAP V2 PCB & Kit</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>Nozzle-based optical Z-probe system. <a href="docs/Voron_TAP_Assembly_Manual.pdf" target="_blank" class="doc-link">Local PDF Manual 📄</a></td>
+            </tr>
+            <tr>
+              <td><strong>PT1000 Temperature Sensor</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>2-wire RTD probe (1000Ω at 0°C); configured with 4.7kΩ pull-up resistor on EBB CAN.</td>
+            </tr>
+            <tr>
+              <td><strong>24V 70W Heater Cartridge</strong></td>
+              <td style="text-align: center;">1</td>
+              <td>High-output heating head (Ø6x20mm, up to 500°C). <a href="https://www.hotend.eu/p/heater-70w-24v" target="_blank" class="doc-link">Heater Specs ↗</a></td>
+            </tr>
+            <tr>
+              <td><strong>MOONS' NEMA17 Steppers</strong></td>
+              <td style="text-align: center;">6</td>
+              <td><code>17HS19-2004S1-H</code> (1.8°, 2.0A/Phase, 59 N·cm, Class H 180°C). <a href="docs/MOONS_17HS19_2004S1_Datasheet.pdf" target="_blank" class="doc-link">Local Datasheet PDF 📄</a></td>
+            </tr>
+            <tr>
+              <td><strong>MOONS' NEMA14 Pancake Motor</strong></td>
+              <td style="text-align: center;">1</td>
+              <td><code>CSE14HRA1L410A</code> 36mm round motor w/ 10T gear for CW2 extruder (1.8°, 1.0A).</td>
+            </tr>
+            <tr>
+              <td><strong>MGN9H / MGN12H Linear Rails</strong></td>
+              <td style="text-align: center;">8</td>
+              <td>6x MGN9H, 1x MGN12H, 1x 50mm MGN9H rail block.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 2: GUIDES & MANUALS -->
+    <section id="guides">
+      <div class="section-header">
+        <h2 class="section-title">2. Assembly Guides & Flashing Documentation</h2>
+        <span class="section-tag">Documentation</span>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Guide / Manual</th>
+              <th>Description</th>
+              <th>Local & Web Links</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Voron 2.4 R2 Assembly Manual</strong></td>
+              <td>Official core mechanical manual for frame, motion system, and gantry setup.</td>
+              <td>
+                <a href="docs/Voron_2.4_R2_Assembly_Manual.pdf" target="_blank" class="doc-link">Local PDF 📄</a> | 
+                <a href="https://raw.githubusercontent.com/VoronDesign/Voron-2/Voron2.4/Manual/Assembly_Manual_2.4r2.pdf" target="_blank" class="doc-link">Web Link ↗</a>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Formbot Build Notes</strong></td>
+              <td>Build notes from Formbot kit provider.</td>
+              <td><a href="https://github.com/FORMBOT/Voron-2.4/tree/main/Build%20Notes" target="_blank" class="doc-link">Build Notes ↗</a></td>
+            </tr>
+            <tr>
+              <td><strong>Voron Stealthburner Manual</strong></td>
+              <td>Toolhead, Clockwork2 extruder, and Neopixel assembly guide.</td>
+              <td>
+                <a href="docs/Voron_Stealthburner_Assembly_Manual.pdf" target="_blank" class="doc-link">Local PDF 📄</a> | 
+                <a href="https://github.com/VoronDesign/Voron-Stealthburner/blob/main/Manual/Assembly_Manual_SB.pdf" target="_blank" class="doc-link">Web Link ↗</a>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Voron TAP Manual</strong></td>
+              <td>Optical probe assembly and toolhead mount integration.</td>
+              <td>
+                <a href="docs/Voron_TAP_Assembly_Manual.pdf" target="_blank" class="doc-link">Local PDF 📄</a> | 
+                <a href="https://github.com/VoronDesign/Voron-Tap/blob/main/Manual/Assembly_Manual_Tap.pdf" target="_blank" class="doc-link">Web Link ↗</a>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Manta M8P V2 Firmware Guide</strong></td>
+              <td>Compiling and flashing Klipper firmware via SD card / DFU.</td>
+              <td>
+                <a href="docs/BTT_Manta_M8P_V2.0_User_Manual.pdf" target="_blank" class="doc-link">Local PDF 📄</a> | 
+                <a href="https://github.com/bigtreetech/Manta-M8P/blob/master/V2.0/BIGTREETECH%20MANTA%20M8P%20V2.0%20User%20Manual.pdf" target="_blank" class="doc-link">Web Link ↗</a>
+              </td>
+            </tr>
+            <tr>
+              <td><strong>EBB SB2209 CAN (RP2040) Setup</strong></td>
+              <td>Flashing Katapult (CanBoot) & Klipper via DFU mode over USB/CAN.</td>
+              <td>
+                <a href="docs/BTT_EBB_SB2209_CAN_RP2040_Build_Guide.pdf" target="_blank" class="doc-link">Local PDF 📄</a> | 
+                <a href="https://global.bttwiki.com/EBB%202209%20CAN%20RP2040.html#klipper-configure" target="_blank" class="doc-link">BTT Wiki ↗</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 3: PRINTER.CFG OVERVIEW -->
+    <section id="overview">
+      <div class="section-header">
+        <h2 class="section-title">3. Overview of printer.cfg</h2>
+        <span class="section-tag">Architecture</span>
+      </div>
+      <div class="card">
+        <p class="card-text">
+          In Klipper 3D printer firmware, <code>printer.cfg</code> serves as the primary configuration hub. Rather than maintaining a single monolithic configuration file containing thousands of lines, standard practice in Voron builds is to split the configuration modularly using <code>[include ...]</code> statements.
+        </p>
+        <p class="card-text">
+          This modular structure simplifies troubleshooting, keeps pin assignments localized, and makes updating individual sub-systems (such as toolhead CAN boards, Nevermore filter macros, or Neopixels) clean and maintainable.
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 4: CONFIGURATION BREAKDOWN -->
+    <section id="breakdown">
+      <div class="section-header">
+        <h2 class="section-title">4. Configuration Modular Breakdown</h2>
+        <span class="section-tag">Config Files</span>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-title"><code>[include mainsail.cfg]</code></div>
+          <div class="card-text">Provides base macro definitions, state tracking variables, and communication hooks for Mainsail OS.</div>
+          <ul class="card-list">
+            <li>Base macros: <code>PAUSE</code>, <code>RESUME</code>, <code>CANCEL_PRINT</code></li>
+            <li>Display & system state definitions</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include canbus-rp2040.cfg]</code></div>
+          <div class="card-text">Configures the BTT EBB SB2209 CAN toolhead board operating via CAN bus.</div>
+          <ul class="card-list">
+            <li>CAN bus <code>canbus_uuid: 4cc248f5b9f1</code></li>
+            <li>Hotend PT1000 sensor on <code>gpio27</code> with 4.7kΩ pull-up</li>
+            <li>ADXL345 accelerometer for Input Shaping</li>
+            <li>Extruder TMC2209 on <code>gpio20</code> at 0.60A</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include TMC2209.cfg]</code></div>
+          <div class="card-text">Defines UART communication and driver parameters for all 6 mainboard stepper slots.</div>
+          <ul class="card-list">
+            <li>Motors 1-2: Stepper X/Y (1.000A run_current)</li>
+            <li>Motors 3-6: Stepper Z0, Z1, Z2, Z3 (0.800A run_current)</li>
+            <li>SpreadCycle mode enabled (<code>stealthchop_threshold: 0</code>)</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include motors.cfg]</code></div>
+          <div class="card-text">Defines motion limits, rotation distances, and microstepping for all axes.</div>
+          <ul class="card-list">
+            <li>X/Y position_max: <code>350</code> mm, 32 microsteps</li>
+            <li>Z rotation_distance: <code>40</code>, gear_ratio: <code>80:16</code></li>
+            <li>Voron TAP virtual endstop on <code>stepper_z</code></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include tap.cfg]</code></div>
+          <div class="card-text">Configures the Voron TAP nozzle-based optical probe and Quad Gantry Leveling (QGL).</div>
+          <ul class="card-list">
+            <li>Probe pin: <code>!EBBCan:gpio22</code></li>
+            <li>150°C probe safety macro (prevents bed surface damage)</li>
+            <li>Quad Gantry Leveling points for 350mm build</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include macros.cfg]</code></div>
+          <div class="card-text">User G-code routines and print cycle sequences.</div>
+          <ul class="card-list">
+            <li><code>PRINT_START</code> (heatsoak, QGL, adaptive bed mesh, purge line)</li>
+            <li><code>PRINT_END</code> (retract, park, cool down, disable steppers)</li>
+            <li><code>M600</code> filament change macro</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include nevermore.cfg]</code></div>
+          <div class="card-text">Controls the Nevermore active carbon recirculating air filter.</div>
+          <ul class="card-list">
+            <li>Fan generic <code>BedFans</code> on pin <code>PF7</code> (FAN0 header)</li>
+            <li>Automated heating monitoring loop and speed control</li>
+            <li>Integrated KNOMI status hooks for bed heating</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include fans.cfg]</code></div>
+          <div class="card-text">Mainboard electronics enclosure cooling and bed heater configuration.</div>
+          <ul class="card-list">
+            <li>Electronics fans on M8P pins <code>PF8</code> and <code>PA4</code></li>
+            <li>Exhaust fan on pin <code>PA6</code></li>
+            <li>AC bed heater on SSR pin <code>PF5</code>, thermistor on <code>PB1</code></li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include KNOMI.cfg]</code></div>
+          <div class="card-text">Configures the BTT KNOMI status display on the toolhead.</div>
+          <ul class="card-list">
+            <li>Display state variables (homing, probing, QGL, heating)</li>
+            <li>Macro wrappers for G28, M109, and Quad Gantry Leveling</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><code>[include lights.cfg]</code></div>
+          <div class="card-text">Stealthburner Neopixel harness and enclosure lighting control.</div>
+          <ul class="card-list">
+            <li>Toolhead Neopixel chain on <code>EBBCan:gpio16</code> (3 LEDs, GRBW)</li>
+            <li>Status macros (<code>STATUS_HOMING</code>, <code>STATUS_HEATING</code>, <code>STATUS_PRINTING</code>)</li>
+            <li>Chamber caselight output on <code>PA3</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: RESOURCES -->
+    <section id="resources">
+      <div class="section-header">
+        <h2 class="section-title">5. Klipper Documentation & Resources</h2>
+        <span class="section-tag">External Links</span>
+      </div>
+
+      <div class="card">
+        <ul class="card-list" style="gap: 0.8rem;">
+          <li><a href="https://www.klipper3d.org/Overview.html" target="_blank" class="doc-link">Klipper Official Overview & Documentation ↗</a></li>
+          <li><a href="https://www.klipper3d.org/Config_Reference.html" target="_blank" class="doc-link">Klipper Configuration Reference Manual ↗</a></li>
+          <li><a href="https://www.klipper3d.org/G-Codes.html" target="_blank" class="doc-link">Klipper G-Code & Macro Reference ↗</a></li>
+          <li><a href="https://www.klipper3d.org/TMC_Drivers.html" target="_blank" class="doc-link">Klipper TMC Driver Tuning Guide ↗</a></li>
+          <li><a href="https://www.klipper3d.org/CANBUS.html" target="_blank" class="doc-link">Klipper CAN Bus Setup & Configuration ↗</a></li>
+          <li><a href="https://docs.vorondesign.com/" target="_blank" class="doc-link">Voron Design Official Documentation Portal ↗</a></li>
+          <li><a href="https://docs.mainsail.xyz/" target="_blank" class="doc-link">Mainsail OS Web Interface Documentation ↗</a></li>
+        </ul>
+      </div>
+    </section>
+
+    <footer>
+      Voron 2.4 R2 Pro Reference Dashboard &bull; Generated for Mainsail UI Integration
+    </footer>
+  </main>
+
+  <!-- PDF Modal Viewer -->
+  <div class="modal-backdrop" id="pdfModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title" id="modalPdfTitle">Document Viewer</div>
+        <button class="modal-close" onclick="closePdfModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <iframe id="pdfFrame" src=""></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function filterContent() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.card, .pdf-card');
+      const rows = document.querySelectorAll('tbody tr');
+
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+    }
+
+    function openPdfModal(pdfUrl, title) {
+      document.getElementById('modalPdfTitle').textContent = title;
+      document.getElementById('pdfFrame').src = pdfUrl;
+      document.getElementById('pdfModal').classList.add('active');
+    }
+
+    function closePdfModal() {
+      document.getElementById('pdfModal').classList.remove('active');
+      document.getElementById('pdfFrame').src = '';
+    }
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closePdfModal();
+    });
+
+    // ScrollSpy active link highlight
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-item a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 100) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+          link.classList.add('active');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
