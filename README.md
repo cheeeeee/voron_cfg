@@ -121,7 +121,7 @@ Below is a detailed breakdown of each included configuration file within this se
   * **Key Components:** `PRINT_START` (bed mesh, heating sequence, nozzle wipe, clean), `PRINT_END` (retract, park toolhead, cool down, disable steppers), filament loading routines (`LOAD_FILAMENT`, `UNLOAD_FILAMENT`), and maintenance macros.
 * **`[include nevermore.cfg]`**
   * **Purpose:** Controls the Nevermore air filtration system (recirculating active carbon filter under the bed).
-  * **Key Components:** Fan speed rules linked to bed/chamber temperature sensors, runtime trackers, and custom G-code commands to trigger intake during ABS/ASA printing.
+  * **Key Components:** Dedicated macros (`NEVERMORE_ON`, `NEVERMORE_OFF`, `NEVERMORE_SLOW`, `NEVERMORE_FAST`) for active carbon filter control.
 * **`[include lights.cfg]`**
   * **Purpose:** Manages the addressable Neopixel LEDs in the Stealthburner toolhead (logo, case, and nozzle lights).
   * **Key Components:** `[neopixel stealthburner]` pin assignments and LED count settings, visual status presets (red for heating, white for lighting, flashing blue for homing), and `[Case LED Control]`.
@@ -132,8 +132,8 @@ Below is a detailed breakdown of each included configuration file within this se
   * **Purpose:** Defines UART communication parameters and stepper driver configurations for TMC2209 drivers.
   * **Key Components:** `[tmc2209 stepper_x]`, `stepper_y`, `stepper_z`, `extruder` blocks, `run_current` and `hold_current` configuration, `stealthchop_threshold`, and sensorless homing thresholds (`driver_SGTHRS`).
 * **`[include fans.cfg]`**
-  * **Purpose:** Outlines all active cooling fans across the printer chassis and controller enclosure.
-  * **Key Components:** Part cooling fan (`[fan]`), hotend cooling fan (`[heater_fan hotend_fan]`), electronics enclosure cooling fans (`[controller_fan]`), and temperature-controlled intake/exhaust fans.
+  * **Purpose:** Outlines all active cooling fans across the printer chassis, controller enclosure, and underbed fan management.
+  * **Key Components:** Underbed fans (`[fan_generic BedFans]` with auto heatsoak monitoring macros), electronics enclosure cooling fans (`[controller_fan Electronics_Fan]`), and Nevermore filter fan definition (`[fan_generic Nevermore]`).
 * **`[include motors.cfg]`**
   * **Purpose:** Defines kinematic motion limits, motor drive steps, rotation distances, and axis bounds.
   * **Key Components:** Axis boundaries (`position_min`, `position_max`, `position_endstop`), microstepping and `rotation_distance` calculations for Quad Gantry Leveling setup, and endstop pin assignments.
