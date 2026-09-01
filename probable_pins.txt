@@ -8,6 +8,7 @@ FAN0/PF7 Bed Fan Right
 FAN1/PF9 Bed Fan Left
 FAN2/PF6 Bed Fan Left
 FAN3/PF8 Nevermore
+FAN4/PA4 Electronics Fan
 
 ====================================================================
 BIGTREETECH MANTA M8P V2.0 - STEPPER DRIVER PIN MAPPING
