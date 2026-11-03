@@ -127,12 +127,13 @@ Below is a detailed breakdown of each included configuration file within this se
 * **`[include macros.cfg]`**
   * **Purpose:** Stores user-defined print routines, filament handling, preheat workflows, and maintenance macros.
   * **Key Components:**
-    * `PRINT_START`: Dynamic print initiation macro. Reads bed, extruder, and chamber temperatures from the slicer. If the bed is >90°C, turns on part cooling and bed/Nevermore circulation fans (`BEDFANSFAST`, `NEVERMORE_FAST`) and checks bed temperature — if cold, waits for heatsoak/chamber stabilization, or skips soaking if the bed is already hot. Preheats nozzle to 150°C for safe TAP probing, executes `quad_gantry_level`, homes Z, runs adaptive bed mesh (`BED_MESH_CALIBRATE ADAPTIVE=1`), heats nozzle to print temp, and runs an extrusion purge line.
-    * `PRINT_END`: Safe finishing sequence. Retracts 5mm filament, turns off heaters, clears bed mesh, parks nozzle at the rear center (`y_max - 2`), turns off fans, and disables steppers.
-    * `M600`: Manual filament change pause macro. Safely lifts Z, retracts filament to clear the hotend melt zone, and parks at front center for easy access.
-    * `LOAD_FILAMENT` & `UNLOAD_FILAMENT`: Automated filament management macros with intelligent temperature verification (auto-heats to 230°C default if below 200°C), melt-zone push/tip-shaping, and high-speed retracts.
-    * `PREHEAT` & `PREHEAT_OFF`: Dedicated chamber and bed warmup routines (default bed 105°C, nozzle 150°C). Automatically homes if needed, parks the toolhead in bed center at Z50 to warm the gantry and TAP sensor, enables the Nevermore filter and 50% part cooling circulation when bed >= 90°C, and supports an optional countdown timer (e.g. `PREHEAT SOAK=15`).
-    * `PARK` & `G32`: Quick toolhead center park macro and complete G28 + QGL + G28 sequence.
+    * `_CLIENT_VARIABLE`: Mainsail integration macro tuned for Dragon UHF anti-heat-creep protection (1.2mm micro-retraction on pause/cancel, 15mm Z hop, front-center filament swap park, and 3-minute pause idle timeout).
+    * `PRINT_START`: Anti-heat-creep print initiation macro tuned for Phaetus Dragon UHF and Voron Tap. Forces hotend heater OFF (`M104 S0`) during homing and bed heatsoak to prevent filament cooking while parked high at Z70 (part cooling OFF). Supports customizable heatsoak duration (`SOAK=X`, default 2m for ABS, 0m for PLA/PETG; pass `SOAK=0` to skip). Uses material-aware low-temp Tap probing (120°C for PLA/TPU to eliminate softening/creep; 150°C for ABS/ASA/PETG). Executes QGL, homes Z, runs adaptive bed mesh (`BED_MESH_CALIBRATE ADAPTIVE=1`), moves directly to the purge start coordinates before heating to print temp (zero dwell time at 250°C), and immediately executes a two-pass anti-blob purge line.
+    * `PRINT_END`: Anti-hourglass-plug finishing sequence. Executes a safe 1.2mm micro-retraction (eliminates the fatal 5mm retraction that pulls molten plastic into the cold break), immediately cuts hotend heater power (`M104 S0`), wipes nozzle, lifts to safe height (at least Z50 away from hot bed), parks at rear center (`y_max - 5`), turns off bed heater and fans, and lets the hotend fan cool the heatsink below 50°C.
+    * `M600`: Manual filament change pause macro. Safely lifts Z, executes anti-string tip shaping, and parks at front center for easy access.
+    * `LOAD_FILAMENT` & `UNLOAD_FILAMENT`: Automated filament management macros. `UNLOAD_FILAMENT` features a cold-snap tip-shaping sequence specifically engineered for the deep Dragon UHF melt zone (prime -> quick snap -> throat freeze dwell -> dip -> rapid pull) to produce clean spear tips without strings or cold bulbs, and immediately kills heater power.
+    * `PREHEAT` & `PREHEAT_OFF`: Dedicated chamber and bed warmup routines (default bed 105°C, nozzle kept at 0°C). Automatically homes if needed, parks the toolhead in bed center at Z80 away from bed radiant heat, enables the Nevermore filter and bed fans when bed >= 90°C, and supports an optional countdown timer (e.g. `PREHEAT SOAK=15`).
+    * `PARK` & `G32`: Quick toolhead center park macro (at safe Z50) and complete G28 + QGL + G28 Z sequence.
 * **`[include nevermore.cfg]`**
   * **Purpose:** Provides user control macros for the Nevermore active carbon recirculating air filter element.
   * **Key Components:** Dedicated macros (`NEVERMORE_ON` with optional `SPEED`, `NEVERMORE_OFF`, `NEVERMORE_SLOW` at 50%, `NEVERMORE_FAST` at 100%) targeting the `[fan_generic Nevermore]` fan defined in `fans.cfg`.
@@ -144,10 +145,10 @@ Below is a detailed breakdown of each included configuration file within this se
   * **Key Components:**
     * Toolhead MCU (`[mcu EBBCan]` with `canbus_uuid: 4cc248f5b9f1`) and CAN bus power control rail (`[output_pin canbus_power]` on `PA5`).
     * Clockwork2 extruder: Moons NEMA14 motor (`50:10` gear ratio, `rotation_distance: 21.9963`), heater cartridge on `EBBCan:gpio7`, and tuned pressure advance (`pressure_advance: 0.04`).
-    * Extruder stepper driver: `[tmc2209 extruder]` on `EBBCan:gpio20` (`run_current: 0.60`, `interpolate: False`).
+    * Extruder stepper driver: `[tmc2209 extruder]` on `EBBCan:gpio20` (`run_current: 0.52`, `interpolate: False`) tuned for Moons CSE14HRA1L410A to minimize motor heat conduction into the CW2 drive gears.
     * Temperature sensing: PT1000 RTD hotend sensor sampled through onboard `MAX31865` amplifier chip over SPI (`gpio8-11`), plus onboard toolhead thermistor `[temperature_sensor EBB_NTC]` on `EBBCan:gpio28`.
     * Input Shaper & Resonance Testing: Onboard `[adxl345]` accelerometer with tuned shaper profile (`3hump_ei`, X: 90.6 Hz, Y: 71.6 Hz).
-    * Fans: 5015 part cooling fan (`EBBCan:gpio14`) and 4010 hotend fan (`EBBCan:gpio13`).
+    * Fans: 5015 part cooling fan (`EBBCan:gpio14`) and 4010 hotend fan (`EBBCan:gpio13`) configured with explicit 100% duty cycle (`fan_speed: 1.0`, `max_power: 1.0`).
     * Runout Sensor: `[filament_switch_sensor filament_sensor]` on `EBBCan:gpio21` configured with `runout_gcode: M600`.
 * **`[include TMC2209.cfg]`**
   * **Purpose:** Defines UART communication parameters, motor currents, and StallGuard sensorless homing for the 6 mainboard stepper drivers.
